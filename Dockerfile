@@ -9,14 +9,22 @@ RUN apt-get update && apt-get install -y \
     cron \
     systemd \
     supervisor \
-    librabbitmq-dev
+    librabbitmq-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libxml2-dev \
+    libonig-dev
 
 # Install AMPQ ext
 RUN pecl install amqp \
     && docker-php-ext-enable amqp
 
 # Type docker-php-ext-install to see available extensions
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql bcmath sockets dom mbstring simplexml xml
+
+# Install PHP extensions which depend on external libraries
+RUN docker-php-ext-configure curl --with-curl \
+    && docker-php-ext-install -j$(nproc) curl
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \

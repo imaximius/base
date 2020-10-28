@@ -19,8 +19,9 @@ RUN pecl install amqp \
 RUN docker-php-ext-install pdo pdo_mysql
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer --version
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && chmod +x /usr/local/bin/composer \
+    && composer --version
 
 # Install Opcache
 RUN docker-php-ext-install opcache \
@@ -32,9 +33,3 @@ RUN docker-php-ext-install opcache \
     && echo 'opcache.save_comments=1' >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
 RUN if ! $DEBUG; then echo 'opcache.validate_timestamps=0' >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini; fi
-
-# Install composer
-RUN apt-get install -y unzip \
- && curl -sS https://getcomposer.org/installer | php \
- && mv composer.phar /usr/local/bin/composer \
- && chmod +x /usr/local/bin/composer
